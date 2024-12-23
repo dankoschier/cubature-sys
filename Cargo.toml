@@ -1,0 +1,47 @@
+[package]
+name = "cubature-sys"
+version = "1.0.4"
+edition = "2021"
+links = "cubature"
+authors = ["Dan Alexander Koschier <dan.koschier@gmail.com>"]
+build = "src/build.rs"
+categories = ["mathematics", "external-ffi-bindings"]
+description = "Bindings for cubature with support for Linux, macOS, and Windows."
+# documentation = "https://kornelski.github.io/rust-lcms2-sys/"
+# homepage = "https://lib.rs/crates/lcms2-sys"
+include = [
+    "src/*",
+    "Cargo.toml",
+    "COPYING",
+    "README.md",
+    "vendor/LICENSE",
+    "vendor/src/*.c",
+    "vendor/src/*.h",
+    "vendor/include/*.h",
+]
+# keywords = ["icc", "color", "profile", "lcms", "sys"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/dankoschier/cubature-sys.git"
+
+[lib]
+doctest = false
+
+[build-dependencies]
+cc = { optional = true, version = "1.2.5" }
+pkg-config = { optional = true, version = "0.3.31" }
+dunce = "1.0.5"
+
+[dependencies]
+libc = "0.2.169"
+
+[features]
+default = ["dynamic", "static-fallback", "parallel"]
+# Try pkg-config to link dynamically. You can also set `CUBATURE_LIB_DIR` and `CUBATURE_INCLUDE_DIR` instead.
+dynamic = ["dep:pkg-config"]
+# Makes static builds faster
+parallel = ["cc?/parallel"]
+# Prefer static build
+static = ["dep:cc"]
+# Allow static build if dynamic linking fails. You can set `CUBATURE_STATIC` env var to prefer static.
+static-fallback = ["dep:cc"]
