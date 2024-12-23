@@ -6,9 +6,8 @@ pub use crate::ffi::*;
 
 #[cfg(test)]
 mod tests {
-    use std::ptr::{addr_of, addr_of_mut};
-
     use super::*;
+    use std::ptr::addr_of_mut;
 
     #[test]
     fn h_integrate_sawtooth() {
@@ -22,8 +21,8 @@ mod tests {
             unsafe {
                 let xv = std::slice::from_raw_parts(x, ndim as usize);
                 let fvalv = std::slice::from_raw_parts_mut(fval, fdim as usize);
-                fvalv[0] = (xv[0] - xv[0].floor());
-                fvalv[1] = (xv[1] - xv[1].floor());
+                fvalv[0] = xv[0] - xv[0].floor();
+                fvalv[1] = xv[1] - xv[1].floor();
                 fvalv[2] = (xv[0] - xv[0].floor()) * (xv[1] - xv[1].floor());
                 *arg1.cast::<usize>() += 1;
             }
