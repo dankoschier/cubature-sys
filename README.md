@@ -8,7 +8,7 @@ This is a `*-sys` crate to make the cubature package for **adaptive multidimensi
 This repo uses git submodules. Make sure you clone with
 
 ```sh
-git clone --recursive`
+git clone --recursive
 ```
 
 or instead run:
