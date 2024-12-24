@@ -1,6 +1,3 @@
-#[allow(non_upper_case_globals)]
-#[allow(non_camel_case_types)]
-#[allow(dead_code)]
 pub mod ffi;
 pub use crate::ffi::*;
 
@@ -48,7 +45,7 @@ mod tests {
                 max_eval,
                 req_abs_error,
                 req_rel_error,
-                error_norm_ERROR_L2,
+                ErrorNorm::L2,
                 valv.as_mut_ptr(),
                 errv.as_mut_ptr(),
             );
