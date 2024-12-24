@@ -16,3 +16,6 @@ or instead run:
 ```sh
 git submodule update --init
 ```
+
+Unless the library location is specified using `CUBATURE_INCLUDE_DIR` and `CUBATURE_LIB_DIR` the library needs to be built from source.
+Building from source requires to have `cmake` installed.
