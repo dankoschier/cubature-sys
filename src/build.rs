@@ -43,7 +43,8 @@ fn compile_library() {
         dunce::canonicalize("vendor").unwrap().display()
     );
 
-    let dst = cmake::build("vendor");
+    let mut config = cmake::Config::new("vendor");
+    let dst = config.build_target("cubature").build();
     println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=cubature");
 }
