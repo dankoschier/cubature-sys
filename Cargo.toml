@@ -7,8 +7,6 @@ authors = ["Dan Alexander Koschier <dan.koschier@gmail.com>"]
 build = "src/build.rs"
 categories = ["mathematics", "external-ffi-bindings"]
 description = "Bindings for cubature with support for Linux, macOS, and Windows."
-# documentation = "https://kornelski.github.io/rust-lcms2-sys/"
-# homepage = "https://lib.rs/crates/lcms2-sys"
 include = [
     "src/*",
     "Cargo.toml",
@@ -19,8 +17,8 @@ include = [
     "vendor/README.md",
     "vendor/CMakeLists.txt",
 ]
-# keywords = ["icc", "color", "profile", "lcms", "sys"]
-license = "MIT"
+keywords = ["cubature", "quadrature", "numeric", "integration", "sys"]
+license-file = "vendor/COPYING.md"
 readme = "README.md"
 repository = "https://github.com/dankoschier/cubature-sys.git"
 
