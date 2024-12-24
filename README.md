@@ -3,7 +3,7 @@
 This is a `*-sys` crate to make package for **adaptive multidimensional integration** (*cubature*) of **vector-valued integrands** over **hypercubes**, written by
 [Steven G. Johnson](http://math.mit.edu/~stevenj), available.
 It allows to compute integrals of the form:
-![n-dimensional integral](doc/integral.png)
+![n-dimensional integral](vendor/doc/integral.png)
 
 ## Contributing
 
