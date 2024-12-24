@@ -12,9 +12,8 @@ include = [
     "Cargo.toml",
     "README.md",
     "vendor/COPYING.md",
-    "vendor/cubature.h",
-    "vendor/hcubature.c",
-    "vendor/pcubature.c",
+    "vendor/*.h",
+    "vendor/*.c",
     "vendor/README.md",
     "vendor/CMakeLists.txt",
 ]
