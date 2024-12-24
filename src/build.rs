@@ -43,8 +43,16 @@ fn compile_library() {
         dunce::canonicalize("vendor").unwrap().display()
     );
 
+    let lib_output_dir = format!("$<1:{}>", env::var("OUT_DIR").unwrap());
+
     let mut config = cmake::Config::new("vendor");
-    let dst = config.build_target("cubature").build();
+    config
+        .define("CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS", "ON")
+        .define("CMAKE_RUNTIME_OUTPUT_DIRECTORY", &lib_output_dir)
+        .define("CMAKE_LIBRARY_OUTPUT_DIRECTORY", &lib_output_dir)
+        .define("CMAKE_ARCHIVE_OUTPUT_DIRECTORY", &lib_output_dir)
+        .build_target("cubature");
+    let dst = config.build();
     println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=cubature");
 }
