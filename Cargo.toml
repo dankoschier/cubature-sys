@@ -12,12 +12,12 @@ description = "Bindings for cubature with support for Linux, macOS, and Windows.
 include = [
     "src/*",
     "Cargo.toml",
-    "COPYING",
     "README.md",
-    "vendor/LICENSE",
-    "vendor/src/*.c",
-    "vendor/src/*.h",
-    "vendor/include/*.h",
+    "vendor/COPYING.md",
+    "vendor/*.c",
+    "vendor/*.h",
+    "vendor/README.md",
+    "vendor/CMakeLists.txt",
 ]
 # keywords = ["icc", "color", "profile", "lcms", "sys"]
 license = "MIT"
@@ -28,20 +28,8 @@ repository = "https://github.com/dankoschier/cubature-sys.git"
 doctest = false
 
 [build-dependencies]
-cc = { optional = true, version = "1.2.5" }
-pkg-config = { optional = true, version = "0.3.31" }
+cmake = "0.1.52"
 dunce = "1.0.5"
 
 [dependencies]
 libc = "0.2.169"
-
-[features]
-default = ["dynamic", "static-fallback", "parallel"]
-# Try pkg-config to link dynamically. You can also set `CUBATURE_LIB_DIR` and `CUBATURE_INCLUDE_DIR` instead.
-dynamic = ["dep:pkg-config"]
-# Makes static builds faster
-parallel = ["cc?/parallel"]
-# Prefer static build
-static = ["dep:cc"]
-# Allow static build if dynamic linking fails. You can set `CUBATURE_STATIC` env var to prefer static.
-static-fallback = ["dep:cc"]
