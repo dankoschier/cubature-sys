@@ -27,7 +27,7 @@ repository = "https://github.com/dankoschier/cubature-sys.git"
 doctest = false
 
 [build-dependencies]
-cc = "1.2.5"
+cmake = "0.1.52"
 dunce = "1.0.5"
 
 [dependencies]

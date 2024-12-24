@@ -43,19 +43,16 @@ fn compile_library() {
         dunce::canonicalize("vendor").unwrap().display()
     );
 
-    // Don't use the CMakeLists.txt as this requires the gigantic clencurt.h to be present.
-    // Due to the size limitations of crates.io we would not be able to submit the package with this
-    // file. Therefore, we use cc instead and use only what we need.
-    let mut build = cc::Build::new();
-    build
-        .include("vendor")
-        .file("vendor/hcubature.c")
-        .file("vendor/pcubature.c")
-        .flag_if_supported("-Wno-sign-compare");
-    if env::var_os("DEBUG").as_deref() != Some("true".as_ref()) {
-        build.define("NDEBUG", Some("1"));
-    }
-    build.compile("cubature");
+    let lib_output_dir = format!("$<1:{}>", env::var("OUT_DIR").unwrap());
+    let mut config = cmake::Config::new("vendor");
+    config
+        .define("CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS", "ON")
+        .define("CMAKE_RUNTIME_OUTPUT_DIRECTORY", &lib_output_dir)
+        .define("CMAKE_LIBRARY_OUTPUT_DIRECTORY", &lib_output_dir)
+        .define("CMAKE_ARCHIVE_OUTPUT_DIRECTORY", &lib_output_dir)
+        .build_target("cubature");
+    let dst = config.build();
+    println!("cargo:rustc-link-search=native={}", dst.display());
 
     println!("cargo:rustc-link-lib=cubature");
 }
