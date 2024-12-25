@@ -1,5 +1,6 @@
 use ::std::os::raw::{c_int, c_uint, c_void};
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub enum ErrorNorm {
     Individual = 0,
