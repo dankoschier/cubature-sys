@@ -1,6 +1,6 @@
 use std::env;
 use std::env::consts;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 fn main() {
     if !try_find_library() {
