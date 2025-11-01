@@ -1,10 +1,18 @@
 use std::env;
 use std::env::consts;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn main() {
     if !try_find_library() {
         compile_library();
+    }
+}
+
+fn link_library(lib_dir: &Path) {
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-lib=cubature");
+    if cfg!(target_os = "macos") || cfg!(target_os = "linux") {
+        println!("cargo:rustc-link-arg=-Wl,-rpath,{}", lib_dir.display());
     }
 }
 
@@ -21,8 +29,7 @@ fn try_find_library() -> bool {
                 .iter()
                 .any(|file| lib_dir.join(file).exists())
             {
-                println!("cargo:rustc-link-search=native={}", lib_dir.display());
-                println!("cargo:rustc-link-lib=cubature");
+                link_library(lib_dir);
                 return true;
             }
 
@@ -53,7 +60,5 @@ fn compile_library() {
         .define("CMAKE_ARCHIVE_OUTPUT_DIRECTORY", &lib_output_dir)
         .build_target("cubature");
     let dst = config.build();
-    println!("cargo:rustc-link-search=native={}", dst.display());
-
-    println!("cargo:rustc-link-lib=cubature");
+    link_library(&dst);
 }
