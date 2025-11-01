@@ -46,6 +46,7 @@ fn compile_library() {
     let lib_output_dir = format!("$<1:{}>", env::var("OUT_DIR").unwrap());
     let mut config = cmake::Config::new("vendor");
     config
+        .define("CMAKE_POLICY_VERSION_MINIMUM", "3.5")
         .define("CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS", "ON")
         .define("CMAKE_RUNTIME_OUTPUT_DIRECTORY", &lib_output_dir)
         .define("CMAKE_LIBRARY_OUTPUT_DIRECTORY", &lib_output_dir)
