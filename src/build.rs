@@ -4,15 +4,24 @@ use std::path::Path;
 
 fn main() {
     if !try_find_library() {
-        compile_library();
+        compile_library_static();
     }
 }
 
-fn link_library(lib_dir: &Path) {
+fn link_library_dynamic(lib_dir: &Path) {
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=cubature");
     if cfg!(target_os = "macos") || cfg!(target_os = "linux") {
         println!("cargo:rustc-link-arg=-Wl,-rpath,{}", lib_dir.display());
+    }
+}
+
+fn link_library_static(lib_dir: &Path) {
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-lib=static=cubature");
+    // Link libm on Unix-like systems when building statically (Windows has no libm)
+    if cfg!(not(target_os = "windows")) {
+        println!("cargo:rustc-link-lib=m");
     }
 }
 
@@ -25,11 +34,24 @@ fn try_find_library() -> bool {
         Some(lib_dir) => {
             let lib_dir = Path::new(&lib_dir);
             let dylib_name = format!("{}cubature{}", consts::DLL_PREFIX, consts::DLL_SUFFIX);
-            if [&dylib_name, "libcubature.a", "cubature.so", "cubature.lib"]
+            let static_candidates = ["libcubature.a", "cubature.lib"]; // .lib for MSVC static
+            let dynamic_candidates = [&dylib_name[..], "cubature.so"]; // generic linux name fallback
+
+            // Prefer a static library if present
+            if static_candidates
                 .iter()
                 .any(|file| lib_dir.join(file).exists())
             {
-                link_library(lib_dir);
+                link_library_static(lib_dir);
+                return true;
+            }
+
+            // Otherwise, accept a dynamic library
+            if dynamic_candidates
+                .iter()
+                .any(|file| lib_dir.join(file).exists())
+            {
+                link_library_dynamic(lib_dir);
                 return true;
             }
 
@@ -44,21 +66,30 @@ fn try_find_library() -> bool {
     }
 }
 
-fn compile_library() {
+fn compile_library_static() {
+    // Expose headers to downstream crates
     println!(
         "cargo:include={}",
         dunce::canonicalize("vendor").unwrap().display()
     );
 
-    let lib_output_dir = format!("$<1:{}>", env::var("OUT_DIR").unwrap());
-    let mut config = cmake::Config::new("vendor");
-    config
-        .define("CMAKE_POLICY_VERSION_MINIMUM", "3.5")
-        .define("CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS", "ON")
-        .define("CMAKE_RUNTIME_OUTPUT_DIRECTORY", &lib_output_dir)
-        .define("CMAKE_LIBRARY_OUTPUT_DIRECTORY", &lib_output_dir)
-        .define("CMAKE_ARCHIVE_OUTPUT_DIRECTORY", &lib_output_dir)
-        .build_target("cubature");
-    let dst = config.build();
-    link_library(&dst);
+    // Compile the vendor sources into a static library via the cc crate.
+    let mut build = cc::Build::new();
+    build
+        .cargo_metadata(true)
+        .include("vendor")
+        .file("vendor/hcubature.c")
+        .file("vendor/pcubature.c");
+
+    // Respect common C standards and warnings when supported
+    build.flag_if_supported("-std=c11");
+    build.warnings(true);
+
+    // Produce a static library named "cubature"
+    build.compile("cubature");
+
+    // cc emits the link-search and -l: we just ensure libm on Unix for math functions
+    if cfg!(not(target_os = "windows")) {
+        println!("cargo:rustc-link-lib=m");
+    }
 }
